@@ -6,7 +6,7 @@ import {
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
 import Loader from "@/components/Loader";
-import { getClerkUsers } from "@/lib/actions/user.actions";
+import { getClerkUsers, getDocumentUsers } from "@/lib/actions/user.actions";
 
 export const Provider = ({ children }: { children: ReactNode }) => {
   return (
@@ -15,6 +15,15 @@ export const Provider = ({ children }: { children: ReactNode }) => {
       resolveUsers={async ({ userIds }) => {
         const users = await getClerkUsers({ userIds });
         return users;
+      }}
+      resolveMentionSuggestions={async ({ text, roomId }) => {
+        const roomUsers = await getDocumentUsers({
+          roomId,
+          currentUser: clerkUser?.emailAddresses[0].emailAddress!,
+          text,
+        });
+
+        return roomUsers;
       }}
     >
       <ClientSideSuspense fallback={<Loader />}>{children}</ClientSideSuspense>

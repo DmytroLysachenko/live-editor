@@ -31,6 +31,10 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #7878a3;
   }
+
+  *:focus {
+    outline: 0px none transparent;
+  }
 }
 
 @layer utilities {
