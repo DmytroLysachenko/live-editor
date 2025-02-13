@@ -10,6 +10,8 @@ import { Input } from "./ui/input";
 import Image from "next/image";
 import { updateDocument } from "@/lib/actions/room.actions";
 import Loader from "./Loader";
+import ShareModal from "./ShareModal";
+import { revalidatePath } from "next/cache";
 
 const CollaborativeRoom = ({
   roomId,
@@ -54,6 +56,7 @@ const CollaborativeRoom = ({
         if (documentTitle !== roomMetadata.title) {
           const updatedDocument = await updateDocument(roomId, documentTitle);
 
+          revalidatePath(`/documents/${roomId}`);
           if (updatedDocument) {
             setEditing(false);
           }
@@ -106,16 +109,24 @@ const CollaborativeRoom = ({
 
             <div className="flex w-full flex-1 justify-end gap-2 sm:gap-3">
               <ActiveCollaborators />
+
+              <ShareModal
+                roomId={roomId}
+                collaborators={users}
+                creatorId={roomMetadata.creatorId}
+                currentUserType={currentUserType}
+              />
+
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
-
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
           </Header>
+
           <Editor
             roomId={roomId}
             currentUserType={currentUserType}

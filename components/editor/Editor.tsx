@@ -76,9 +76,12 @@ export function Editor({
               <AutoFocusPlugin />
             </div>
           )}
+
           <LiveblocksPlugin>
             <FloatingComposer className="w-[350px]" />
+
             <FloatingThreads threads={threads} />
+
             <Comments />
           </LiveblocksPlugin>
         </div>
