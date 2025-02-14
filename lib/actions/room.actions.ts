@@ -1,14 +1,12 @@
 "use server";
 
 import { nanoid } from "nanoid";
-
 import { RoomAccesses } from "@liveblocks/node";
 import { revalidatePath } from "next/cache";
+import { clerkClient } from "@clerk/nextjs/server";
+
 import { getAccessType, parseStringify } from "../utils";
 import { liveblocks } from "../liveblocks";
-import { Share } from "next/font/google";
-import { clerkClient } from "@clerk/nextjs/server";
-import { client } from "./user.actions";
 
 export const createDocument = async ({
   userId,
@@ -93,7 +91,6 @@ export const updateDocumentAccess = async ({
     const client = await clerkClient();
 
     const users = await client.users.getUserList();
-    console.log(users.data);
 
     if (
       !users.data.find((user) => user.emailAddresses[0].emailAddress === email)
@@ -110,7 +107,21 @@ export const updateDocumentAccess = async ({
     });
 
     if (room) {
-      //TODO notification
+      const notificationId = nanoid();
+
+      await liveblocks.triggerInboxNotification({
+        userId: email,
+        kind: "$documentAccess",
+        subjectId: notificationId,
+        activityData: {
+          userType,
+          title: `You have been granted ${userType} access to a document by ${updatedBy.name}`,
+          updatedBy: updatedBy.name,
+          avatar: updatedBy.avatar,
+          email: updatedBy.email,
+        },
+        roomId,
+      });
     }
 
     revalidatePath(`/documents/${roomId}`);
@@ -143,5 +154,15 @@ export const removeCollaborator = async ({
     return parseStringify(updatedRoom);
   } catch (error) {
     console.log(`Error happened while updating document: ${error}`);
+  }
+};
+
+export const deleteDocument = async (roomId: string) => {
+  try {
+    await liveblocks.deleteRoom(roomId);
+
+    revalidatePath("/");
+  } catch (error) {
+    console.log(`Error happened while deleting document: ${error}`);
   }
 };

@@ -14,6 +14,7 @@ const UserTypeSelector = ({
 }: UserTypeSelectorParams) => {
   const accessChangeHandler = (type: UserType) => {
     setUserType(type);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     onClickHandler && onClickHandler(type);
   };
 
@@ -25,6 +26,7 @@ const UserTypeSelector = ({
       <SelectTrigger className="shad-select">
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
+
       <SelectContent className="border-none bg-dark-200">
         <SelectItem
           value="viewer"
@@ -32,6 +34,7 @@ const UserTypeSelector = ({
         >
           Can view
         </SelectItem>
+
         <SelectItem
           value="editor"
           className="shad-select-item"

@@ -2,16 +2,17 @@
 
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react";
 import React, { useEffect, useRef, useState } from "react";
-import Header from "./Header";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import Image from "next/image";
+import { revalidatePath } from "next/cache";
+
+import Header from "./Header";
 import { Editor } from "./editor/Editor";
 import ActiveCollaborators from "./ActiveCollaborators";
 import { Input } from "./ui/input";
-import Image from "next/image";
 import { updateDocument } from "@/lib/actions/room.actions";
 import Loader from "./Loader";
 import ShareModal from "./ShareModal";
-import { revalidatePath } from "next/cache";
 
 const CollaborativeRoom = ({
   roomId,
@@ -20,27 +21,37 @@ const CollaborativeRoom = ({
   currentUserType,
 }: CollaborativeRoomProps) => {
   const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [documentTitle, setDocumentTitle] = useState(roomMetadata.title);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = async (e: MouseEvent) => {
       if (
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
         setEditing(false);
-        updateDocument(roomId, documentTitle);
+        try {
+          setLoading(true);
+          if (documentTitle !== roomMetadata.title) {
+            await updateDocument(roomId, documentTitle);
+            revalidatePath(`/documents/${roomId}`);
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [roomId, documentTitle]);
+  }, [roomId, documentTitle, roomMetadata.title]);
 
   useEffect(() => {
     if (editing && inputRef.current) {
@@ -53,6 +64,7 @@ const CollaborativeRoom = ({
   ) => {
     if (e.key === "Enter") {
       try {
+        setLoading(true);
         if (documentTitle !== roomMetadata.title) {
           const updatedDocument = await updateDocument(roomId, documentTitle);
 
@@ -63,6 +75,8 @@ const CollaborativeRoom = ({
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -76,7 +90,7 @@ const CollaborativeRoom = ({
               ref={containerRef}
               className="flex w-full items-center justify-center gap-2"
             >
-              {editing && !loading ? (
+              {editing && !isLoading ? (
                 <Input
                   type="text"
                   value={documentTitle}

@@ -2,6 +2,8 @@
 
 import { useSelf } from "@liveblocks/react/suspense";
 import React, { useState } from "react";
+import Image from "next/image";
+
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import Image from "next/image";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import UserTypeSelector from "./UserTypeSelector";

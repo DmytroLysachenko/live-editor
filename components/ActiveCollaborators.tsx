@@ -9,8 +9,6 @@ const ActiveCollaborators = () => {
 
   const collaborators = others.map((other) => other.info);
 
-  console.log(collaborators);
-
   return (
     <ul className="collaborators-list">
       {collaborators.map(({ id, avatar, name, color }) => (
