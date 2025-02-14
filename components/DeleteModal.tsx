@@ -49,6 +49,7 @@ const DeleteModal = ({ roomId }: DeleteModalProps) => {
           />
         </Button>
       </DialogTrigger>
+
       <DialogContent className="shad-dialog">
         <DialogHeader>
           <Image
@@ -58,7 +59,9 @@ const DeleteModal = ({ roomId }: DeleteModalProps) => {
             height={48}
             className="mb-4"
           />
+
           <DialogTitle>Delete document</DialogTitle>
+
           <DialogDescription>
             Are you sure you want to delete this document? This action cannot be
             undone.

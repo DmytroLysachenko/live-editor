@@ -36,6 +36,7 @@ const Notifications = () => {
           <div className="absolute top-1 right-1 z-20 size-2 rounded-full bg-blue-500" />
         )}
       </PopoverTrigger>
+
       <PopoverContent
         align="end"
         className="shad-popover"

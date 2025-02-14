@@ -18,10 +18,12 @@ const Header = ({ children, className }: HeaderProps) => {
           alt="Logo"
           className="mr-2 inline"
         />
+
         <span className=" text-xl hidden md:inline text-white font-semibold">
           LiveEditor
         </span>
       </Link>
+
       {children}
     </div>
   );
